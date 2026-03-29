@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
                 await unlink(filePath);
                 console.log("Deleted:", fileName);
             } catch (err) {
-                console.error("Delete failed:", err);
+                console.error("Deleted failed:", err);
             }
         }, 60 * 60 * 1000); // 1 Stunde
 
