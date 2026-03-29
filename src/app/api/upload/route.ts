@@ -3,10 +3,16 @@ import { writeFile, unlink } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
 
+import { put } from "@vercel/blob"
+
 export async function POST(req: NextRequest) {
     try {
         const data = await req.formData();
         const file = data.get("file") as File;
+
+        const blob = await put(file.name, file, {
+            access: 'public',
+        })
 
         if (!file) {
             return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -40,7 +46,7 @@ export async function POST(req: NextRequest) {
         }, 60 * 60 * 1000); // 1 Stunde
 
         return NextResponse.json({
-            url: `/uploads/${fileName}`,
+            url: `${blob.url}`,
             expiresIn: 3600,
         });
 
