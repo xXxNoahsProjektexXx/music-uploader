@@ -20,7 +20,7 @@ jobs:
       - name: 📦 Install
         run: npm ci
 
-      - name: 🏗️ Build
+      - name: 🏗️ Build It
         run: npm run build
 
       - name: 🚀 Deploy via SSH
