@@ -1,29 +1,40 @@
-name: Next.js CI
+name: Deploy Next.js App
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Repo klonen
         uses: actions/checkout@v4
 
-      - name: 🟢 Node.js setup
+      - name: 🟢 Node Setup
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
-      - name: 📦 Dependencies installieren
+      - name: 📦 Install
         run: npm ci
 
       - name: 🏗️ Build
         run: npm run build
 
-      - name: ✅ Lint (optional)
-        run: npm run lint || true
+      - name: 🚀 Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/mp3-share
+
+            git pull origin main
+
+            npm install
+            npm run build
+
+            pm2 restart mp3-share || pm2 start npm --name "mp3-share" -- start
